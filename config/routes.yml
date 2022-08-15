@@ -1,0 +1,4 @@
+get:
+    method: "GET"
+    path: "/get"
+    controller: "App/Controller/Controller::query"
