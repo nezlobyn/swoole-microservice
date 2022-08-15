@@ -2,8 +2,7 @@
 
 namespace App\Library;
 
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Swoole\Http\{Request, Response};
 
 /**
  * Base AbstractController

@@ -3,13 +3,14 @@
 namespace App;
 
 use App\Library\Helper;
-use FastRoute\DataGenerator\GroupCountBased;
-use FastRoute\Dispatcher;
-use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
-use FastRoute\RouteCollector;
-use FastRoute\RouteParser\Std;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use FastRoute\{
+    DataGenerator\GroupCountBased,
+    Dispatcher,
+    Dispatcher\GroupCountBased as GroupCountBasedDispatcher,
+    RouteCollector,
+    RouteParser\Std
+};
+use Swoole\Http\{Request, Response};
 
 class Kernel
 {
@@ -27,12 +28,12 @@ class Kernel
     {
         if (!$this->router) {
             // Load Routes
-            $routes = include Helper::getRootDir('config/routes.php');
+            $routes = yaml_parse_file(Helper::getRootDir('config/routes.yml'));
 
             // Create Routes
             $collector = new RouteCollector(new Std(), new GroupCountBased());
             foreach ($routes as $route) {
-                $collector->addRoute($route[0], $route[1], $route[2]);
+                $collector->addRoute($route['method'], $route['path'], str_replace('/', '\\', $route['controller']));
             }
             $this->router = new GroupCountBasedDispatcher($collector->getData());
         }
@@ -46,7 +47,6 @@ class Kernel
      */
     public function boot(Request $request, Response $response): void
     {
-        // Dispatch Route
         $route = $this->router->dispatch($request->server['request_method'], $request->server['request_uri']);
 
         switch ($route[0]) {

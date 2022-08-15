@@ -13,27 +13,29 @@ RUN composer install \
     --no-scripts \
     --prefer-dist
 
-#
-# PHP7
-#
-FROM php:7.3-alpine
+FROM php:8.1.0-cli
 
-RUN apk add autoconf
-RUN apk add alpine-sdk
-RUN pecl install swoole && \
-    docker-php-ext-enable swoole
+RUN apt-get update && apt-get install vim -y && \
+    apt-get install openssl -y && \
+    apt-get install libssl-dev -y && \
+    apt-get install wget -y && \
+    apt-get install git -y && \
+    apt-get install procps -y && \
+    apt-get install htop -y && \
+    apt-get install -y libcurl4-openssl-dev
 
-RUN docker-php-ext-install opcache && \
-    touch /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.interned_strings_buffer=64" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.max_accelerated_files=50000" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.revalidate_freq=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.huge_code_pages=1" >> /usr/local/etc/php/conf.d/opcache.ini
+RUN cd /tmp && git clone https://github.com/openswoole/swoole-src.git && \
+    cd swoole-src && \
+    git checkout v4.11.0 && \
+    phpize  && \
+    ./configure --enable-openssl --enable-swoole-curl --enable-http2 --enable-mysqlnd && \
+    make && make install
 
-RUN apk del autoconf
-RUN rm -rf /var/cache/apk/*
+RUN touch /usr/local/etc/php/conf.d/openswoole.ini && \
+    echo 'extension=openswoole.so' > /usr/local/etc/php/conf.d/zzz_openswoole.ini
+
+RUN apt-get install -y libyaml-dev
+RUN pecl install yaml && docker-php-ext-enable yaml
 
 RUN mkdir -p /app
 COPY . /app
@@ -43,4 +45,4 @@ WORKDIR /app
 
 EXPOSE 9500
 
-CMD ["/usr/local/bin/php", "/app/bin/server.php"]
+CMD ["/usr/local/bin/php", "/app/bin/run.php"]

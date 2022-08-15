@@ -1,12 +1,10 @@
 version: '3.4'
 
 services:
-    gclib:
-        #image: appaydin/gclib
+    app:
         build: .
         ports:
-            - 90:9500
+            - 127.0.0.1:8400:6000
         environment:
-            - SWOOLE_PORT=9500
-            - SWOOLE_WORKER=2
-            - DBCITY=""
+            - SWOOLE_PORT=6000
+            - SWOOLE_WORKER=20

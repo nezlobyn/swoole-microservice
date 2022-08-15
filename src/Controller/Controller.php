@@ -4,11 +4,10 @@ namespace App\Controller;
 
 use App\Library\AbstractController;
 
-class ExRateController extends AbstractController
+class Controller extends AbstractController
 {
-    public function latestRate(): void
+    public function query(): void
     {
-        var_dump(111111111);
-        $this->jsonResponse('Hello world');
+        $this->jsonResponse('Hello world!!!!!!!!!');
     }
 }

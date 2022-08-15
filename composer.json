@@ -1,22 +1,10 @@
 {
-  "name": "appaydin/gclib",
-  "homepage": "https://github.com/appaydin/gclib",
-  "description": "GeoIP and ExchangeRate API",
-  "keywords": [
-    "geoip",
-    "geolocation",
-    "exchangerate",
-    "currency"
-  ],
+  "name": "nezlobyn/swoole-microservice",
+  "description": "API",
   "type": "project",
-  "license": "MIT",
   "require": {
-    "php": "^7.3.0",
-    "ext-json": "*",
-    "ext-simplexml": "*",
-    "ext-curl": "*",
-    "nikic/fast-route": "^1.3",
-    "maxmind-db/reader": "^1.4"
+    "php": ">=8.0.0",
+    "nikic/fast-route": "^1.3"
   },
   "require-dev": {
     "eaglewu/swoole-ide-helper": "@dev"
