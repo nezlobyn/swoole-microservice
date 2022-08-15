@@ -2,3 +2,8 @@ get:
     method: "GET"
     path: "/get"
     controller: "App/Controller/Controller::query"
+
+create:
+    method: "POST"
+    path: "/create"
+    controller: "App/Controller/Controller::create"

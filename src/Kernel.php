@@ -14,10 +14,7 @@ use Swoole\Http\{Request, Response};
 
 class Kernel
 {
-    /**
-     * @var array
-     */
-    private $container = [];
+    private array $container = [];
 
     /**
      * @var Dispatcher
@@ -39,12 +36,6 @@ class Kernel
         }
     }
 
-    /**
-     * Boot Request
-     *
-     * @param Request $request
-     * @param Response $response
-     */
     public function boot(Request $request, Response $response): void
     {
         $route = $this->router->dispatch($request->server['request_method'], $request->server['request_uri']);
@@ -58,21 +49,13 @@ class Kernel
                 break;
             case Dispatcher::FOUND:
                 [$class, $method] = explode('::', $route[1]);
-                $this->callController($request, $response, $class, $method, $route[2]);
+
+                $this->callController($request, $response, $class, $method);
                 break;
         }
     }
 
-    /**
-     * Call AbstractController Method
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param $class
-     * @param $method
-     * @param $parameters
-     */
-    private function callController(Request $request, Response $response, $class, $method, $parameters): void
+    private function callController(Request $request, Response $response, $class, $method): void
     {
         // Create AbstractController
         if (!isset($this->container[$class])) {
@@ -83,16 +66,13 @@ class Kernel
         $this->container[$class]->set($request, $response);
 
         // Response
-        $parameters ? call_user_func_array([$this->container[$class], $method], $parameters) : $this->container[$class]->{$method}();
+        try {
+            $this->container[$class]->{$method}(...\array_values(\get_object_vars(\json_decode($request->getContent()))));
+        } catch (\Throwable $ex) {
+            $this->errorResponse($response, $ex->getMessage());
+        }
     }
 
-    /**
-     * 404 Not Found Response
-     *
-     * @param Response $response
-     * @param string $message
-     * @param int $code
-     */
     private function errorResponse(Response $response, string $message = '404 not found!', int $code = 404): void
     {
         $response->header('Content-Type', 'application/json');

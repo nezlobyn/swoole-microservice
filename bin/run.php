@@ -9,9 +9,6 @@ use Swoole\Http\Response;
 
 class run
 {
-    /**
-     * Server Parameters
-     */
     public const HOST = '0.0.0.0';
     public const PORT = '6000';
 
@@ -20,9 +17,6 @@ class run
      */
     private $kernel;
 
-    /**
-     * Create HTTP Server
-     */
     public function __construct()
     {
         $server = new Server($this::HOST, $_ENV['SWOOLE_PORT'] ?? $this::PORT);
@@ -35,12 +29,6 @@ class run
         $server->start();
     }
 
-    /**
-     * Server Request Event
-     *
-     * @param Request $request
-     * @param Response $response
-     */
     public function onRequest(Request $request, Response $response): void
     {
         // Create Kernel

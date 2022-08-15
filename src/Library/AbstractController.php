@@ -4,50 +4,24 @@ namespace App\Library;
 
 use Swoole\Http\{Request, Response};
 
-/**
- * Base AbstractController
- */
 class AbstractController
 {
-    /**
-     * @var Request
-     */
-    protected $request;
+    protected Request $request;
 
-    /**
-     * @var Response
-     */
-    protected $response;
+    protected Response $response;
 
-    /**
-     * Kernel Set Request|Response
-     *
-     * @param Request $request
-     * @param Response $response
-     */
     final function set(Request $request, Response $response)
     {
         $this->request = $request;
         $this->response = $response;
     }
 
-    /**
-     * JSON Response
-     *
-     * @param array $data
-     */
-    public function jsonResponse($data = []): void
+    public function jsonResponse(array $data = []): void
     {
         $this->response->header('Content-Type', 'application/json');
         $this->response->end(json_encode($data));
     }
 
-    /**
-     * HTTP Error Response
-     *
-     * @param string $message
-     * @param int $code
-     */
     public function errorResponse(string $message = '404 not found!', int $code = 404): void
     {
         $this->response->header('Content-Type', 'application/json');
