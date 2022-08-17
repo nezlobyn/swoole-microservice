@@ -2,15 +2,15 @@
 
 namespace App\Library;
 
-use Swoole\Http\{Request, Response};
+use Swoole\Http\Response;
 
 class AbstractController
 {
-    protected Request $request;
+    protected PsrRequest $request;
 
     protected Response $response;
 
-    final function set(Request $request, Response $response)
+    final function set(PsrRequest $request, Response $response)
     {
         $this->request = $request;
         $this->response = $response;

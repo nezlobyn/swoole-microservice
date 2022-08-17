@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Library\Helper;
+use App\Library\PsrRequest;
 use FastRoute\{
     DataGenerator\GroupCountBased,
     Dispatcher,
@@ -50,12 +51,12 @@ class Kernel
             case Dispatcher::FOUND:
                 [$class, $method] = explode('::', $route[1]);
 
-                $this->callController($request, $response, $class, $method);
+                $this->callController(new PsrRequest($request->getMethod(), '', [], $request->rawcontent(), $request->get ?? []), $response, $class, $method);
                 break;
         }
     }
 
-    private function callController(Request $request, Response $response, $class, $method): void
+    private function callController(PsrRequest $request, Response $response, $class, $method): void
     {
         // Create AbstractController
         if (!isset($this->container[$class])) {
@@ -67,7 +68,7 @@ class Kernel
 
         // Response
         try {
-            $this->container[$class]->{$method}(...\array_values(\get_object_vars(\json_decode($request->getContent()))));
+            $this->container[$class]->{$method}(...\array_values($request->getParsedBody()));
         } catch (\Throwable $ex) {
             $this->errorResponse($response, $ex->getMessage());
         }
