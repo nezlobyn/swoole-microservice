@@ -13,7 +13,7 @@ class Controller extends AbstractController
         $this->jsonResponse($storage->getBy($field, $value));
     }
 
-    public function create(string $firstName, string $lastName, string $city): void
+    public function create(string $firstName, string $lastName, string $city, ?int $age = null): void
     {
         $storage  = new Storage();
 

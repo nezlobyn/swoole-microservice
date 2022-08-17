@@ -4,6 +4,7 @@ namespace App\Library\Http;
 
 use \ReflectionMethod;
 use Swoole\Http\Response;
+use function Symfony\Component\String\b;
 
 class ArgumentResolver
 {
@@ -16,22 +17,22 @@ class ArgumentResolver
         $arguments = [];
         $receivedArguments = $request->getParsedBody();
 
-        foreach (\array_values($necessaryArgumentsName) as $argumentName) {
-            if ('request' === $argumentName) {
-                \array_push($arguments, $request);
-                continue;
-            }
-
-            if (isset($receivedArguments[$argumentName])) {
-                \array_push($arguments, $receivedArguments[$argumentName]);
-                continue;
-            }
-            $camelToSnakeArgumentName = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $argumentName));;
-
-            if (isset($receivedArguments[$camelToSnakeArgumentName])) {
-                \array_push($arguments, $receivedArguments[$camelToSnakeArgumentName]);
-            } else {
-                $this->errorResponse($response, "missed `$argumentName` value");
+        foreach ($necessaryArgumentsName as $argumentName => $isDefaultValueAvailableData) {
+            switch (true) {
+                case 'request' === $argumentName:
+                    \array_push($arguments, $request);
+                    break;
+                case isset($receivedArguments[$argumentName]):
+                    \array_push($arguments, $receivedArguments[$argumentName]);
+                    break;
+                case isset($receivedArguments[$camelToSnakeArgumentName = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $argumentName))]):
+                    \array_push($arguments, $receivedArguments[$camelToSnakeArgumentName]);
+                    break;
+                case $isDefaultValueAvailableData['is_default_value_available']:
+                    \array_push($arguments, $isDefaultValueAvailableData['default_value']);
+                    break;
+                default:
+                    $this->errorResponse($response, "missed `$argumentName` value");
             }
         }
 
@@ -44,7 +45,11 @@ class ArgumentResolver
         $requiredParams = [];
 
         foreach ($ref->getParameters() as $param) {
-            \array_push($requiredParams, $param->name);
+            if ($param->isDefaultValueAvailable()) {
+                $requiredParams[$param->name] = ['is_default_value_available' => $param->isDefaultValueAvailable(), 'default_value' =>  $param->getDefaultValue()];
+            } else {
+                $requiredParams[$param->name] = ['is_default_value_available' => $param->isDefaultValueAvailable()];
+            }
         }
 
         return $requiredParams;
