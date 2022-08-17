@@ -2,6 +2,7 @@
 
 namespace App\Library;
 
+use App\Library\Http\Request;
 use Swoole\Http\Response;
 
 class AbstractController

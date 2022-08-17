@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Library;
+namespace App\Library\Http;
 
 use Nyholm\Psr7\{MessageTrait, RequestTrait, Stream, Uri};
 use Psr\Http\Message\{ServerRequestInterface, UploadedFileInterface};
@@ -37,13 +37,10 @@ class Request implements ServerRequestInterface
         $this->attributes = $attributes;
         $this->uploadedFiles = $files;
 
-        switch ($method) {
-            case 'POST':
-                $this->parsedBody = !empty($body) ? \get_object_vars(\json_decode($body)) : [];
-                break;
-            case 'GET':
-                $this->parsedBody = !empty($body) ? $this->queryParams : [];
-                break;
+        if ('GET' === $method) {
+            $this->parsedBody = !empty($body) ? $this->queryParams : [];
+        } else {
+            $this->parsedBody = !empty($body) ? \get_object_vars(\json_decode($body)) : [];
         }
     }
 

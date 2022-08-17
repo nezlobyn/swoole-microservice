@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Library;
+namespace App\Library\Http;
 
 use Swoole\Http\Response;
 

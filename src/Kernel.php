@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Library\{ArgumentResolver, Helper, Request, ResponseErrorTrait};
+use App\Library\Http\{ArgumentResolver, Helper, Request, ResponseErrorTrait};
 use FastRoute\{
     DataGenerator\GroupCountBased,
     Dispatcher,
