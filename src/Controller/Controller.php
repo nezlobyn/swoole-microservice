@@ -7,13 +7,21 @@ use App\Storage\Storage;
 
 class Controller extends AbstractController
 {
-    public function query(): void
+    public function query(string $field = null, string $value = null): void
     {
-        $this->jsonResponse(['text' => 'ps']);
+        $storage  = new Storage();
+
+        $this->jsonResponse(['text' => $storage->getBy($field, $value)]);
     }
 
-    public function create(int $id, string $name): void
+    public function create(string $firstName, string $lastName, string $city): void
     {
-        $this->jsonResponse(['id' => $id, 'name' => $name]);
+        $storage  = new Storage();
+
+        if (!($id = $storage->addEntity($firstName, $lastName, $city))) {
+            $this->errorResponse('something went wrong');
+        }
+
+        $this->jsonResponse(['id' => $id, 'first_name' => $firstName, 'last_name' => $lastName, 'city' => $city]);
     }
 }

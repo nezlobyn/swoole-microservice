@@ -28,7 +28,6 @@ class run
             echo sprintf("Swoole HTTP server is started at http://%s:%s\n", $this::HOST, $_ENV['SWOOLE_PORT'] ?? $this::PORT);
         });
 
-//        $server->on('start', [$this, 'preflightCheck']);
         $server->on('request', [$this, 'onRequest']);
 
         $server->start();
@@ -44,24 +43,6 @@ class run
         // Process Request
         $this->kernel->boot($request, $response);
     }
-
-//    public function preflightCheck(Server $server): void
-//    {
-//        $connectionParams = [
-//            'dbname' => 'database',
-//            'user' => 'root',
-//            'password' => 'root',
-//            'host' => 'mysql_db',
-//            'driver' => 'pdo_mysql',
-//        ];
-//        try {
-//            new Storage(DriverManager::getConnection($connectionParams));
-//            echo sprintf("Connected successfully: %s", $connectionParams['dbname']);
-//        } catch (Exception) {
-//            echo sprintf("Connection failed: %s", $connectionParams['dbname']);
-//            $server->close(1);
-//        }
-//    }
 }
 
 new run();
