@@ -4,8 +4,8 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use App\Kernel;
 use Swoole\HTTP\Server;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Swoole\HTTP\Request;
+use Swoole\HTTP\Response;
 
 class run
 {
