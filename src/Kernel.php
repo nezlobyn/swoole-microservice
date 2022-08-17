@@ -11,7 +11,6 @@ use FastRoute\{
     RouteParser\Std
 };
 use Nyholm\Psr7\UploadedFile;
-use Psr\Http\Message\{RequestInterface, ServerRequestInterface, UploadedFileInterface};
 use Swoole\Http\{Request as SwooleRequest, Response};
 
 class Kernel
