@@ -19,25 +19,21 @@ class run
 
     public function __construct()
     {
-        $server = new Server($this::HOST, $_ENV['SWOOLE_PORT'] ?? $this::PORT);
-
+        $server = new Server($_ENV['SWOOLE_HOST'] ?? $this::HOST, $_ENV['SWOOLE_PORT'] ?? $this::PORT);
         $server->on("Start", function() {
-            echo sprintf("Swoole HTTP server is started at http://%s:%s\n", $this::HOST, $_ENV['SWOOLE_PORT'] ?? $this::PORT);
+            echo sprintf("Swoole HTTP server is started at http://%s:%s\n", $_ENV['SWOOLE_HOST'] ?? $this::HOST, $_ENV['SWOOLE_PORT'] ?? $this::PORT);
         });
 
         $server->on('request', [$this, 'onRequest']);
-
         $server->start();
     }
 
     public function onRequest(Request $request, Response $response): void
     {
-        // Create Kernel
         if (!$this->kernel) {
             $this->kernel = new Kernel();
         }
 
-        // Process Request
         $this->kernel->boot($request, $response);
     }
 }

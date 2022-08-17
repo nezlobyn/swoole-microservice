@@ -11,7 +11,6 @@ class ArgumentResolver
 
     public function getArguments(Request $request, Response $response, string $class, string $method): array
     {
-        // Necessary arguments for the method
         $necessaryArgumentsName = $this->getNecessaryArgumentsName($class, $method);
 
         $arguments = [];

@@ -29,7 +29,7 @@ class Kernel
     {
         if (!$this->router) {
             // Load Routes
-            $routes = yaml_parse_file(Helper::getRootDir('config/routes.yml'));
+            $routes = \yaml_parse_file(Helper::getRootDir('config/routes.yml'));
 
             // Create Routes
             $collector = new RouteCollector(new Std(), new GroupCountBased());
@@ -61,15 +61,11 @@ class Kernel
 
     private function callController(Request $request, Response $response, $class, $method): void
     {
-        // Create AbstractController
         if (!isset($this->container[$class])) {
             $this->container[$class] = new $class();
         }
 
-        // Set Request|Response
         $this->container[$class]->set($request, $response);
-
-        // Response
         $this->container[$class]->{$method}(...(new ArgumentResolver)->getArguments($request, $response, $class, $method));
     }
 
