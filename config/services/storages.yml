@@ -1,0 +1,8 @@
+services:
+    app.storage.carts:
+        class: App\Storage\Storage
+        arguments:
+            - "@app.database.connection.configuration"
+
+    app.database.connection.configuration:
+        class: Doctrine\DBAL\Configuration

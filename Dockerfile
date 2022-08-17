@@ -31,6 +31,8 @@ RUN cd /tmp && git clone https://github.com/openswoole/swoole-src.git && \
     ./configure --enable-openssl --enable-swoole-curl --enable-http2 --enable-mysqlnd && \
     make && make install
 
+RUN docker-php-ext-install mysqli pdo_mysql
+
 RUN touch /usr/local/etc/php/conf.d/openswoole.ini && \
     echo 'extension=openswoole.so' > /usr/local/etc/php/conf.d/zzz_openswoole.ini
 
