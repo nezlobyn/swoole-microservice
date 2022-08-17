@@ -11,6 +11,7 @@ use FastRoute\{
     RouteCollector,
     RouteParser\Std
 };
+use Nyholm\Psr7\UploadedFile;
 use Swoole\Http\{Request, Response};
 
 class Kernel
@@ -51,7 +52,7 @@ class Kernel
             case Dispatcher::FOUND:
                 [$class, $method] = explode('::', $route[1]);
 
-                $this->callController(new PsrRequest($request->getMethod(), '', [], $request->rawcontent(), $request->get ?? []), $response, $class, $method);
+                $this->callController($this->getPsrRequest($request), $response, $class, $method);
                 break;
         }
     }
@@ -72,6 +73,24 @@ class Kernel
         } catch (\Throwable $ex) {
             $this->errorResponse($response, $ex->getMessage());
         }
+    }
+
+    protected function getPsrRequest(Request $request): PsrRequest
+    {
+        $server = $request->server;
+
+        return new PsrRequest(
+            $server['request_method'] ?? 'GET',
+            ($server['request_uri'] ?? '/') . (isset($server['query_string']) && !empty($server['query_string']) ? "?{$server['query_string']}" : ''),
+            $request->header ?? [],
+            $request->rawcontent(),
+            $request->get ?? [],
+            $request->cookie ?? [],
+            $server ?? [],
+            isset($request->header['x-request-id']) ? ['uid' => $request->header['x-request-id']] : [],
+            !empty($request->files) ? \array_map(static fn (array $file) => new UploadedFile($file['tmp_name'], (int)$file['size'], (int)$file['error'], $file['name'], $file['type']), $request->files) : [],
+            $request->post ?? [],
+        );
     }
 
     private function errorResponse(Response $response, string $message = '404 not found!', int $code = 404): void

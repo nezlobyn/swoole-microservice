@@ -3,12 +3,9 @@
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 use App\Kernel;
-use App\Storage\Storage;
-use Doctrine\DBAL\DriverManager;
 use Swoole\HTTP\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Doctrine\DBAL\Exception;
 
 class run
 {
