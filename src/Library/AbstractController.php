@@ -6,11 +6,11 @@ use Swoole\Http\Response;
 
 class AbstractController
 {
-    protected PsrRequest $request;
+    protected Request $request;
 
     protected Response $response;
 
-    final function set(PsrRequest $request, Response $response)
+    final function set(Request $request, Response $response)
     {
         $this->request = $request;
         $this->response = $response;

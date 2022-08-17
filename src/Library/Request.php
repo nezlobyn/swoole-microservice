@@ -5,7 +5,7 @@ namespace App\Library;
 use Nyholm\Psr7\{MessageTrait, RequestTrait, Stream, Uri};
 use Psr\Http\Message\{ServerRequestInterface, UploadedFileInterface};
 
-class PsrRequest implements ServerRequestInterface
+class Request implements ServerRequestInterface
 {
     use MessageTrait;
     use RequestTrait;
@@ -189,7 +189,6 @@ class PsrRequest implements ServerRequestInterface
 
     protected function parseQuery($str): array
     {
-        var_dump($str);
         $result = [];
 
         if ('' === $str) {

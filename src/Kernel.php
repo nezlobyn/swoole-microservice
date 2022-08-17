@@ -2,8 +2,7 @@
 
 namespace App;
 
-use App\Library\Helper;
-use App\Library\PsrRequest;
+use App\Library\{ArgumentResolver, Helper, Request, ResponseErrorTrait};
 use FastRoute\{
     DataGenerator\GroupCountBased,
     Dispatcher,
@@ -12,10 +11,13 @@ use FastRoute\{
     RouteParser\Std
 };
 use Nyholm\Psr7\UploadedFile;
-use Swoole\Http\{Request, Response};
+use Psr\Http\Message\{RequestInterface, ServerRequestInterface, UploadedFileInterface};
+use Swoole\Http\{Request as SwooleRequest, Response};
 
 class Kernel
 {
+    use ResponseErrorTrait;
+
     private array $container = [];
 
     /**
@@ -38,7 +40,7 @@ class Kernel
         }
     }
 
-    public function boot(Request $request, Response $response): void
+    public function boot(SwooleRequest $request, Response $response): void
     {
         $route = $this->router->dispatch($request->server['request_method'], $request->server['request_uri']);
 
@@ -52,12 +54,12 @@ class Kernel
             case Dispatcher::FOUND:
                 [$class, $method] = explode('::', $route[1]);
 
-                $this->callController($this->getPsrRequest($request), $response, $class, $method);
+                $this->callController($this->getRequest($request), $response, $class, $method);
                 break;
         }
     }
 
-    private function callController(PsrRequest $request, Response $response, $class, $method): void
+    private function callController(Request $request, Response $response, $class, $method): void
     {
         // Create AbstractController
         if (!isset($this->container[$class])) {
@@ -68,18 +70,14 @@ class Kernel
         $this->container[$class]->set($request, $response);
 
         // Response
-        try {
-            $this->container[$class]->{$method}(...\array_values($request->getParsedBody()));
-        } catch (\Throwable $ex) {
-            $this->errorResponse($response, $ex->getMessage());
-        }
+        $this->container[$class]->{$method}(...(new ArgumentResolver)->getArguments($request, $response, $class, $method));
     }
 
-    protected function getPsrRequest(Request $request): PsrRequest
+    protected function getRequest(SwooleRequest $request): Request
     {
         $server = $request->server;
 
-        return new PsrRequest(
+        return new Request(
             $server['request_method'] ?? 'GET',
             ($server['request_uri'] ?? '/') . (isset($server['query_string']) && !empty($server['query_string']) ? "?{$server['query_string']}" : ''),
             $request->header ?? [],
@@ -91,12 +89,5 @@ class Kernel
             !empty($request->files) ? \array_map(static fn (array $file) => new UploadedFile($file['tmp_name'], (int)$file['size'], (int)$file['error'], $file['name'], $file['type']), $request->files) : [],
             $request->post ?? [],
         );
-    }
-
-    private function errorResponse(Response $response, string $message = '404 not found!', int $code = 404): void
-    {
-        $response->header('Content-Type', 'application/json');
-        $response->status($code);
-        $response->end(json_encode(['code' => $code, 'message' => $message]));
     }
 }

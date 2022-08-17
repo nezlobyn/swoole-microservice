@@ -2,8 +2,7 @@
 
 namespace App\Storage;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\{Connection, DriverManager};
 
 class Storage
 {

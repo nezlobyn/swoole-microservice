@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\Library\AbstractController;
-use App\Storage\Storage;
+use App\{Library\AbstractController, Library\Request, Storage\Storage};
 
 class Controller extends AbstractController
 {
@@ -11,7 +10,7 @@ class Controller extends AbstractController
     {
         $storage  = new Storage();
 
-        $this->jsonResponse(['text' => $storage->getBy($field, $value)]);
+        $this->jsonResponse($storage->getBy($field, $value));
     }
 
     public function create(string $firstName, string $lastName, string $city): void
