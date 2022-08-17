@@ -4,7 +4,6 @@ namespace App\Library\Http;
 
 use \ReflectionMethod;
 use Swoole\Http\Response;
-use function Symfony\Component\String\b;
 
 class ArgumentResolver
 {
